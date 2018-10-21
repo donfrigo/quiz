@@ -1,0 +1,38 @@
+{
+  "title": "Mathematics quiz",
+  "questions": [
+    {
+      "text": "What is 2 + 3?",
+      "type": "mc",
+      "answers": [
+        "3",
+        "5",
+        "9",
+        "-10"
+      ],
+      "answer": "5"
+    },
+    {
+      "text": "What is 2^10?",
+      "type": "mc",
+      "answers": [
+        "210",
+        "512",
+        "1024",
+        "2048"
+      ],
+      "answer": "1024"
+    },
+    {
+      "text": "What is 100-72?",
+      "type": "mc",
+      "answers": [
+        "21 ",
+        "38",
+        "28",
+        "18"
+      ],
+      "answer": "28"
+    }
+  ]
+}

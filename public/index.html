@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <title>Mathematics Quiz </title>
+</head>
+<body>
+
+<div class="container text-center">
+    <br />
+    <div id="quiz">
+        <quiz url="http://localhost:9000/quiz">
+
+            <div slot="intro" slot-scope="props">
+               <h2>Welcome to my {{props.title}}.</h2>
+            </div>
+
+            <div slot="results" slot-scope="props">
+                You got {{props.correct}} right out of
+            {{props.length}} questions.
+                You did better, than {{props.perc}}% of all contestants.
+            </div>
+
+        </quiz>
+    </div>
+</div>
+
+<script>
+
+    Vue.component('quiz', {
+        template:`
+<div>
+  <div v-if="introStage">
+    <slot name="intro" :title="title">
+    <h1>Welcome to the Quiz: {{title}}</h1>
+    </slot>
+    <button @click="startQuiz">START!</button>
+  </div>
+
+  <div v-if="questionStage">
+    <question
+              :question="questions[currentQuestion]"
+              v-on:answer="handleAnswer"
+              :question-number="currentQuestion+1"
+    ></question>
+  </div>
+
+  <div v-if="resultsStage">
+    <slot name="results" :length="questions.length" :perc="perc" :correct="correct">
+    You got {{correct}} right out of {{questions.length}} questions. You percentage is {{perc}}%.
+    </slot>
+  </div>
+</div>
+`,
+        props:['url'],
+        data() {
+            return {
+                introStage:false,
+                questionStage:false,
+                resultsStage:false,
+                title:'',
+                questions:[],
+                currentQuestion:0,
+                answers:[],
+                correct:0,
+                id: '',
+                perc:null
+            }
+        },
+        created() {
+            fetch(this.url)
+                    .then(res => res.json())
+        .then(res => {
+                this.title = res.title;
+            this.questions = res.questions;
+            this.introStage = true;
+        })
+
+        },
+        methods:{
+            startQuiz() {
+                let number = Math.floor(Math.random() * (1000));
+                this.introStage = false;
+                this.questionStage = true;
+                this.id = number;
+            },
+            handleAnswer(e) {
+                this.answers[this.currentQuestion]=e.answer;
+                if((this.currentQuestion+1) === this.questions.length) {
+                    this.handleResults();
+                    this.questionStage = false;
+                    this.resultsStage = true;
+                } else {
+                    this.currentQuestion++;
+                }
+            },
+            getResults(user, result) {
+                var self = this;
+                axios.put('/results', { user: user, result:result })
+                        .then(function (response) {
+                            self.perc = response.data.percentage })
+                        .catch(function (error) { console.log(error); });
+            },
+            handleResults() {
+                this.questions.forEach((a, index) => {
+                    if(this.answers[index] === a.answer) this.correct++;
+            });
+
+              this.getResults(this.id.toString(), this.correct.toString())
+
+
+            }
+        }
+
+    });
+
+    Vue.component('question', {
+        template:`
+<div>
+  <strong>Question {{ questionNumber }}:</strong><br/>
+  <strong>{{ question.text }} </strong>
+
+  <div v-if="question.type === 'tf'">
+    <input type="radio" name="currentQuestion" id="trueAnswer" v-model="answer" value="t"><label for="trueAnswer">True</label><br/>
+    <input type="radio" name="currentQuestion" id="falseAnswer" v-model="answer" value="f"><label for="falseAnswer">False</label><br/>
+  </div>
+
+  <div v-if="question.type === 'mc'">
+    <div v-for="(mcanswer,index) in question.answers">
+    <input type="radio" :id="'answer'+index" name="currentQuestion" v-model="answer" :value="mcanswer"><label :for="'answer'+index">{{mcanswer}}</label><br/>
+    </div>
+  </div>
+
+  <button @click="submitAnswer">Answer</button>
+</div>
+`,
+        data() {
+            return {
+                answer:''
+            }
+        },
+        props:['question','question-number'],
+        methods:{
+            submitAnswer:function() {
+                this.$emit('answer', {answer:this.answer});
+                this.answer = null;
+            }
+        }
+    });
+
+    const app = new Vue({
+        el:'#quiz',
+        data() {
+            return {
+            }
+        }
+    })
+</script>
+
+</body>
+</html>

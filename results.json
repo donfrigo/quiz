@@ -1,0 +1,22 @@
+[
+    {
+      "user": "Jacob",
+      "result": "2"
+    },
+    {
+      "user": "Jackson",
+      "result": "2"
+    },
+    {
+      "user": "Carla",
+      "result": "0"
+    },
+    {
+      "user": "Fred",
+      "result": "1"
+    },
+    {
+      "user": "Claudia",
+      "result": "3"
+    }
+]
