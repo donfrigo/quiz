@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/donfrigo/malta/handlers"
-	"github.com/donfrigo/malta/structs"
+	"github.com/donfrigo/quiz/handlers"
+	"github.com/donfrigo/quiz/structs"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"io/ioutil"

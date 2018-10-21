@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/donfrigo/malta/structs"
+	"github.com/donfrigo/quiz/structs"
 	"github.com/labstack/echo"
 	"io/ioutil"
 	"math"
